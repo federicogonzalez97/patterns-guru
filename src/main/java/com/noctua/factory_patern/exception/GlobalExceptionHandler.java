@@ -1,4 +1,4 @@
-package com.noctua.factory_patern.controller;
+package com.noctua.factory_patern.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
