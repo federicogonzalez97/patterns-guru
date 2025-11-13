@@ -15,7 +15,7 @@ public class SaleFactory {
     private final ChileSale chileSale;
     private final MexicoSale mexicoSale;
 
-    public Sale getSaleByCountry(String country) {
+    public Sale createSale(String country) {
         return switch (country.toUpperCase()) {
             case "BR" -> brazilSale;
             case "CL" -> chileSale;

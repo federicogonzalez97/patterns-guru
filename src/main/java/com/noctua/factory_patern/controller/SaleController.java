@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @RestController
 @RequestMapping("/api/sales")
 @AllArgsConstructor
@@ -21,17 +24,24 @@ public class SaleController {
 
     @PostMapping("/price")
     public ResponseEntity<SaleResponse> calculate(@Valid @RequestBody SaleRequest request) {
-        Sale sale = factory.getSaleByCountry(request.country());
+        Sale sale = factory.createSale(request.country());
         double finalAmount = sale.calculatePriceWithVAT(request.amount());
 
-        double vatRate = (finalAmount - request.amount()) / request.amount();
+        // Redondear a 2 decimales para evitar problemas de precisión de punto flotante
+        double vatRate = BigDecimal.valueOf((finalAmount - request.amount()) / request.amount())
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+        
+        double finalAmountRounded = BigDecimal.valueOf(finalAmount)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
 
         return ResponseEntity.ok(
                 new SaleResponse(
                         request.country(),
                         request.amount(),
                         vatRate,
-                        finalAmount
+                        finalAmountRounded
                 )
         );
     }
